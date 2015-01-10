@@ -1,0 +1,48 @@
+/*****************
+* {
+    outline: red 1px solid;
+}
+****************/
+
+
+/******************
+**** Common
+*******************/
+html {
+    font-family: 'Raleway', sans-serif;
+}
+
+*:focus
+{
+    outline: none;
+}
+
+body {
+   /* background-color: darkgray;    */
+    background-image: url("../images/brushed-metal-background-original3-1024x948.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    margin:0; padding:0;
+}
+
+
+#map {
+    display:block;
+    width:900px;
+    height:500px;
+}
+#name {
+    position:absolute;
+    top:30px;
+    left:20px;
+    font-family:arial;
+    font-size:3em;
+}
+.state {
+    fill:#c0c0c0;
+    stroke:white;
+    stroke-width:1px;
+}
+.state:hover {
+    fill:#333;
+}
