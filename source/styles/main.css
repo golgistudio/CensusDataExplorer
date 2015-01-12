@@ -29,12 +29,13 @@ body {
 #map {
     display:block;
     width:900px;
-    height:500px;
+    height:550px;
+    margin-top: 20px;
+    margin-left: 10px;
+
 }
 #name {
-    position:absolute;
-    top:30px;
-    left:20px;
+
     font-family:arial;
     font-size:3em;
 }
@@ -46,3 +47,54 @@ body {
 .state:hover {
     fill:#333;
 }
+
+#demo {
+   margin: 10px;
+
+   border: 2px solid lightgrey;
+}
+
+#bubbleArea {
+    border: 2px solid lightgrey;
+    margin: 10px;
+    background-color: #f3f3f3;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #333;
+    shape-rendering: crispEdges;
+}
+
+/*
+text{
+    fill: #fff;
+}
+*/
+
+.bar {
+    fill: steelblue;
+}
+
+.x.axis path {
+    /*display: none;*/
+}
+
+
+#holder{
+    overflow:hidden;
+}
+
+
+.bubble{
+    float: left;
+    border: 1px solid lightgrey;
+}
+
+.bubblechart .x.axis text{
+    font-size: 11px;
+    text-anchor:end!important;
+}
+
+
