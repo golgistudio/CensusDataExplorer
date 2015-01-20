@@ -28,8 +28,8 @@ body {
 
 #map {
     display:block;
-    width:900px;
-    height:550px;
+    width:750px;
+    height:350px;
     margin-top: 20px;
     margin-left: 10px;
 
@@ -95,6 +95,92 @@ text{
 .bubblechart .x.axis text{
     font-size: 11px;
     text-anchor:end!important;
+}
+
+#tabArea {
+    width: 90%;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    height: 50%;
+    margin-bottom: 20px;
+}           .custom-combobox {
+                position: relative;
+                display: inline-block;
+            }
+.custom-combobox-toggle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin-left: -1px;
+    padding: 0;
+}
+
+.custom-combobox-input {
+    margin: 0;
+    padding: 5px 10px;
+}
+
+
+#selectedStates {
+
+    display: inline-block;
+}
+
+#map {
+
+    display: inline-block;
+}
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+a, a:visited, a:active {
+  color: #444;
+}
+
+#vis {
+  width: 940px;
+  height: 600px;
+  clear: both;
+  margin-bottom: 10px;
+}
+
+footer {
+  text-align: center;
+}
+
+#view_selection {
+  margin-top: 10px;
+}
+
+.years {
+  font-size: 21px;
+  fill: #aaa;
+}
+
+.tooltip {
+	position: absolute;
+	top: 100px;
+	left: 100px;
+  -moz-border-radius:5px;
+	border-radius: 5px;
+  border: 2px solid #000;
+	/* background: #222222; */
+  background: #fff;
+	opacity: .9;
+	/* color: #eeeeee; */
+  color: black;
+	padding: 10px;
+	width: 300px;
+	font-size: 12px;
+	z-index: 10;
+}
+
+.tooltip .title {
+	font-size: 13px;
+}
+
+.tooltip .name {
+  font-weight:bold;
 }
 
 

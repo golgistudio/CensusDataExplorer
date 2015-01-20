@@ -11,7 +11,7 @@
     <link href='http://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
 
     <!-- Dependencies  -->
-
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
     <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css"/>
     <link rel="stylesheet" href="http://cdn.datatables.net/1.10.4/css/jquery.dataTables.css"/>
     <!-- Census Explorer files  -->
@@ -24,25 +24,52 @@
 <header>
     <H1>Select a state.... </H1>
 </header>
+<div id="mapArea">
+<div id="selectedStates">
+    <div class="ui-widget">
+        <label for="tag1">State-1: </label>
+        <select id="tag1">  </select>
+    </div>
+    <div class="ui-widget">
+        <label for="tag2">State-2: </label>
+        <select id="tag2">   </select>
+    </div>
 
+    <div class="ui-widget">
+        <label for="measure">Measures: </label>
+        <select id="measure">   </select>
+    </div>
+
+    <button id="compare">Run Compare</button>
+</div>
 <div id="map">
     <div id="name">&nbsp;</div>
 </div>
-<div id="bubbleArea">
-<div id="holder">
-    <div class="bubble" data-role="bubble" data-width=400 data-height=400></div>
-    <div class="bubble" data-role="bubble" data-width=300 data-height=200></div>
-    <div class="bubble" data-role="bubble" data-width=200 data-height=200></div>
 </div>
+<div id="tabArea">
+    <ul>
+        <li><a href="#tab-1-vizArea"> Visualization </a></li>
+        <li><a href="#tab-2-tableArea"> Table </a></li>
+    </ul>
+    <div id="tab-1-vizArea">
+         <div id="container" class="container">
 
-<ul class="testers">
-    <li><a href="#">toggle</a></li>
-</ul>
-    </div>
-<div id="demo">
-
+    <div id="main" role="main">
+      <div id="view_selection" class="btn-group">
+        <a href="#" id="all" class="btn active">Combined</a>
+        <a href="#" id="year" class="btn">Grants By State</a>
       </div>
+      <div id="vis"></div>
+    </div>
+
+    </div>
+        </div>
+    <div id="tab-2-tableArea">
+        <div id="demo">
+        </div>
+    </div>
 </div>
+
 
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <script src="http://d3js.org/topojson.v1.min.js"></script>
@@ -50,17 +77,25 @@
 <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 <![endif]-->
 
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
 <script type="text/javascript" src="http://cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="libs/json2.js"></script>
 <script type="text/javascript" src="libs/amplify.min.js"></script>
 <script type="text/javascript" src="libs/dust-full.min.js"></script>
 
 <!-- Census App files  -->
+<script type="text/javascript" src="data/stateProperties.js"></script>
+    <script type="text/javascript" src="data/donations.js"></script>
 <script type="text/javascript" src="data/usjson.js"></script>
+    <script type="text/javascript" src="scripts/CustomTooltip.js"></script>
+    <script type="text/javascript" src="scripts/plugins.js"></script>
 <script type="text/javascript" src="scripts/config.js"></script>
-<script type="text/javascript" src="scripts/app.js"></script>
+<script type="text/javascript" src="scripts/comboBox.js"></script>
+<script type="text/javascript" src="scripts/bubbleChart.js"></script>
+    <script type="text/javascript" src="scripts/app.js"></script>
+
+
 
 </body>
 </html>
