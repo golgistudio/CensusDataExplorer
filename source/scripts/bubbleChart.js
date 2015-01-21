@@ -3,7 +3,7 @@
   var BubbleChart, root,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-  BubbleChart = function(data) {
+  BubbleChart = function(data, categories) {
       this.hide_details = __bind(this.hide_details, this);
       this.show_details = __bind(this.show_details, this);
       this.hide_years = __bind(this.hide_years, this);
@@ -24,20 +24,20 @@
         x: this.width / 2,
         y: this.height / 2
       };
-      this.year_centers = {
-        "2008": {
-          x: this.width / 3,
-          y: this.height / 2
-        },
-        "2009": {
-          x: this.width / 2,
-          y: this.height / 2
-        },
-        "2010": {
-          x: 2 * this.width / 3,
-          y: this.height / 2
-        }
-      };
+      var cat1 = categories[0];
+      var cat2 = categories[1];
+
+      this.year_centers = [];
+
+      this.year_centers[cat1] = [];
+      this.year_centers[cat1]["x"] = this.width / 3;
+      this.year_centers[cat1]["y"] = this.height / 2;
+
+      this.year_centers[cat2] = [];
+      this.year_centers[cat2]["x"] = 2 * this.width / 3;
+      this.year_centers[cat2]["y"] = this.height / 2;
+
+
       this.layout_gravity = -0.01;
       this.damper = 0.1;
       this.vis = null;
@@ -134,7 +134,7 @@
       })(this);
     };
 
-    BubbleChart.prototype.display_by_year = function() {
+    BubbleChart.prototype.display_by_year = function(categories) {
       this.force.gravity(this.layout_gravity).charge(this.charge).friction(0.9).on("tick", (function(_this) {
         return function(e) {
           return _this.circles.each(_this.move_towards_year(e.alpha)).attr("cx", function(d) {
@@ -145,7 +145,7 @@
         };
       })(this));
       this.force.start();
-      return this.display_years();
+      return this.display_years(categories);
     };
 
     BubbleChart.prototype.move_towards_year = function(alpha) {
@@ -159,13 +159,14 @@
       })(this);
     };
 
-    BubbleChart.prototype.display_years = function() {
-      var years, years_data, years_x;
-      years_x = {
-        "2008": 160,
-        "2009": this.width / 2,
-        "2010": this.width - 160
-      };
+    BubbleChart.prototype.display_years = function(categories) {
+      var years, years_data;
+      var years_x = [];
+
+      var cat1 = categories[0];
+      var cat2 = categories[1];
+      years_x[cat1] = 160;
+      years_x[cat2] = this.width - 160;
       years_data = d3.keys(years_x);
       years = this.vis.selectAll(".years").data(years_data);
       return years.enter().append("text").attr("class", "years").attr("x", (function(_this) {

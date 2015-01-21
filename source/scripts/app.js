@@ -4,6 +4,7 @@
 
 var stateData;
 var donationData;
+var censusData;
 
 function makeTheMap(state, svg, path) {
     svg.selectAll(".state")
@@ -58,14 +59,71 @@ function processRaceData(data) {
             { "title": "Col4", "class": "center" },
             { "title": "Col5", "class": "center" },
             { "title": "State", "class": "center" }
-        ]
+        ],
+        dom: 'T<"clear">lfrtip',
+        tableTools: {
+            "sSwfPath": "http://cdn.datatables.net/tabletools/2.2.3/swf/copy_csv_xls_pdf.swf"
+        },
+        responsive: true
     } );
     $('#example').dataTable().fnDraw();
+
+    convertToJSON(data);
 
     //var numItems = data.length;
     //for (var i = 0; i < numItems; i++) {
     //   censusDataTable.row.add(data[i]).draw();
     //}
+}
+
+function convertToJSON(data) {
+    var censusData = {};
+    var censusItems = [];
+
+    censusData.censusArray = censusItems;
+
+
+    var categories = [];
+
+    var titles = data[0];
+
+    var categoryLength = titles.length;
+
+    var stateIndex;
+
+    for (var index = 0; index < categoryLength; index++) {
+        categories[index] = titles[index];
+
+        if (titles[index] === "state") {
+            stateIndex = index;
+        }
+    }
+
+    var dataLength = data.length;
+
+
+    for (var i = 1; i < dataLength; i++) {
+        var dataItem = data[i];
+
+        for (var j = 0; j < categoryLength; j++ ) {
+
+            if ( j !== stateIndex) {
+                var stateName = categories[stateIndex];
+                var categoryName = categories[j];
+
+                var item = {
+                    "stateName": dataItem[stateIndex],
+                    "population": dataItem[j],
+                    "category": categoryName
+
+                };
+
+                censusData.censusArray.push(item);
+            }
+        }
+
+    }
+    return censusData;
 }
 
 function getRaceData() {
@@ -106,8 +164,8 @@ function initializeBubbleChart() {
 
         var chart, render_vis;
         chart = null;
-        render_vis = function(csv) {
-            chart = new BubbleChart(csv);
+        render_vis = function(csv, categories) {
+            chart = new BubbleChart(csv, categories);
             chart.start();
             return root.display_all();
         };
@@ -118,7 +176,8 @@ function initializeBubbleChart() {
         })(this);
         root.display_year = (function(_this) {
             return function() {
-                return chart.display_by_year();
+                var categories = ["2008", "2010"];
+                return chart.display_by_year(categories);
             };
         })(this);
         root.toggle_view = (function(_this) {
@@ -130,7 +189,9 @@ function initializeBubbleChart() {
                 }
             };
         })(this);
-        return render_vis(donationData);
+
+        var categories = ["2008", "2010"];
+        return render_vis(donationData, categories);
 
 }
 
