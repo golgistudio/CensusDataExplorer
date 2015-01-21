@@ -44,9 +44,9 @@
       this.nodes = [];
       this.force = null;
       this.circles = null;
-      this.fill_color = d3.scale.ordinal().domain(["low", "medium", "high"]).range(["#d84b2a", "#beccae", "#7aa25c"]);
+      this.fill_color = d3.scale.ordinal().domain(["low", "medium", "high"]).range(["#d84b2a", "#FFFA2D", "#7aa25c", "#819BFF", "#FF7DF5"]);
       max_amount = d3.max(this.data, function(d) {
-        return parseInt(d.total_amount);
+        return parseInt(d.population);
       });
       this.radius_scale = d3.scale.pow().exponent(0.5).domain([0, max_amount]).range([2, 85]);
       this.create_nodes();
@@ -59,12 +59,11 @@
           var node;
           node = {
             id: d.id,
-            radius: _this.radius_scale(parseInt(d.total_amount)),
-            value: d.total_amount,
-            name: d.grant_title,
-            org: d.organization,
-            group: d.group,
-            year: d.start_year,
+            radius: _this.radius_scale(parseInt(d.population)),
+            value: d.population,
+            name: d.stateName,
+            category: d.category,
+            year: d.stateID,
             x: Math.random() * 900,
             y: Math.random() * 800
           };
@@ -85,11 +84,11 @@
       that = this;
       this.circles.enter().append("circle").attr("r", 0).attr("fill", (function(_this) {
         return function(d) {
-          return _this.fill_color(d.group);
+          return _this.fill_color(d.category);
         };
       })(this)).attr("stroke-width", 2).attr("stroke", (function(_this) {
         return function(d) {
-          return d3.rgb(_this.fill_color(d.group)).darker();
+          return d3.rgb(_this.fill_color(d.category)).darker();
         };
       })(this)).attr("id", function(d) {
         return "bubble_" + d.id;
@@ -165,10 +164,18 @@
 
       var cat1 = categories[0];
       var cat2 = categories[1];
-      years_x[cat1] = 160;
-      years_x[cat2] = this.width - 160;
+      var names = [];
+      names[0] = stateNames[cat1];
+      names[1] = stateNames[cat2];
+      years_x[names[0]] = 160;
+      years_x[names[1]] = this.width - 160;
       years_data = d3.keys(years_x);
+
+
+
+
       years = this.vis.selectAll(".years").data(years_data);
+
       return years.enter().append("text").attr("class", "years").attr("x", (function(_this) {
         return function(d) {
           return years_x[d];
@@ -186,16 +193,17 @@
     BubbleChart.prototype.show_details = function(data, i, element) {
       var content;
       d3.select(element).attr("stroke", "black");
-      content = "<span class=\"name\">Title:</span><span class=\"value\"> " + data.name + "</span><br/>";
-      content += "<span class=\"name\">Amount:</span><span class=\"value\"> $" + (addCommas(data.value)) + "</span><br/>";
-      content += "<span class=\"name\">Year:</span><span class=\"value\"> " + data.year + "</span>";
+      content = "<span class=\"name\">Category:</span><span class=\"value\"> " + data.category + "</span><br/>";
+      content += "<span class=\"name\">Population:</span><span class=\"value\">" + (addCommas(data.value)) + "</span><br/>";
+      content += "<span class=\"name\">State:</span><span class=\"value\"> " + data.year + "</span><br/>";
+      content += "<span class=\"name\">State Name:</span><span class=\"value\"> " + data.name + "</span>";
       return this.tooltip.showTooltip(content, d3.event);
     };
 
     BubbleChart.prototype.hide_details = function(data, i, element) {
       d3.select(element).attr("stroke", (function(_this) {
         return function(d) {
-          return d3.rgb(_this.fill_color(d.group)).darker();
+          return d3.rgb(_this.fill_color(d.category)).darker();
         };
       })(this));
       return this.tooltip.hideTooltip();
