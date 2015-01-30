@@ -1,8 +1,8 @@
-/*****************
+/****************
 * {
     outline: red 1px solid;
 }
-****************/
+***************/
 
 
 /******************
@@ -25,39 +25,62 @@ body {
     margin:0; padding:0;
 }
 
+/**********************
+**** Selector controls
+***********************/
 
-#map {
-    display:block;
-    width:750px;
-    height:350px;
-    margin-top: 20px;
-    margin-left: 10px;
+#selectedStates {
 
-}
-#name {
-
-    font-family:arial;
-    font-size:3em;
-}
-.state {
-    fill:#c0c0c0;
-    stroke:white;
-    stroke-width:1px;
-}
-.state:hover {
-    fill:#333;
+   margin-left: auto;
+    margin-right: auto;
+    text-align: center;
 }
 
-#demo {
+.ui-widget {
+    margin: 10px;
+}
+
+/**********************
+**** Data Table
+***********************/
+
+#tableArea {
    margin: 10px;
 
    border: 2px solid lightgrey;
 }
 
+/**********************
+**** Bubble chart
+***********************/
 #bubbleArea {
     border: 2px solid lightgrey;
     margin: 10px;
     background-color: #f3f3f3;
+}
+
+circle.state1 {
+    stroke: white;
+
+}
+
+circle:hover {
+
+    fill: #d0ebd1;
+}
+
+text.state1 {
+    fill: black;
+}
+
+circle.state2 {
+    stroke:  darkblue;
+    stroke-width: 3px;
+
+}
+
+text.state2 {
+    fill: darkblue;
 }
 
 .axis path,
@@ -67,14 +90,9 @@ body {
     shape-rendering: crispEdges;
 }
 
-/*
-text{
-    fill: #fff;
-}
-*/
 
 .bar {
-    fill: steelblue;
+    fill: red;
 }
 
 .x.axis path {
@@ -122,15 +140,6 @@ text{
 }
 
 
-#selectedStates {
-
-    display: inline-block;
-}
-
-#map {
-
-    display: inline-block;
-}
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 a, a:visited, a:active {
@@ -184,3 +193,34 @@ footer {
 }
 
 
+/************************
+ Map area
+
+*************************/
+
+
+#map {
+
+    width:750px;
+    height:350px;
+    margin-top: 20px;
+    margin-left: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+
+
+}
+#name {
+
+    font-family:arial;
+    font-size:3em;
+}
+.state {
+    fill:#c0c0c0;
+    stroke:white;
+    stroke-width:1px;
+}
+.state:hover {
+    fill:#333;
+}

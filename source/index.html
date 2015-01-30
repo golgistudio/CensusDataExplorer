@@ -25,29 +25,29 @@
 
 <body>
 <header>
-    <H1>Select a state.... </H1>
+    <H1>Select states to compare.... </H1>
 </header>
 <div id="mapArea">
-<div id="selectedStates">
-    <div class="ui-widget">
-        <label for="tag1">State-1: </label>
-        <select id="tag1">  </select>
-    </div>
-    <div class="ui-widget">
-        <label for="tag2">State-2: </label>
-        <select id="tag2">   </select>
-    </div>
+    <div id="selectedStates">
+        <div class="ui-widget">
+            <label for="tag1">State   1: </label>
+            <select id="tag1"> </select>
+        </div>
+        <div class="ui-widget">
+            <label for="tag2">State   2: </label>
+            <select id="tag2"> </select>
+        </div>
 
-    <div class="ui-widget">
-        <label for="measure">Measures: </label>
-        <select id="measure">   </select>
-    </div>
+        <div class="ui-widget">
+            <label for="measure">Measure: </label>
+            <select id="measure"> </select>
+        </div>
 
-    <button id="compare">Run Compare</button>
-</div>
-<div id="map">
-    <div id="name">&nbsp;</div>
-</div>
+        <button id="compare">Run Compare</button>
+    </div>
+    <div id="map">
+        <div id="name">&nbsp;</div>
+    </div>
 </div>
 <div id="tabArea">
     <ul>
@@ -55,20 +55,20 @@
         <li><a href="#tab-2-tableArea"> Table </a></li>
     </ul>
     <div id="tab-1-vizArea">
-         <div id="container" class="container">
+        <div id="container" class="container">
 
-    <div id="main" role="main">
-      <div id="view_selection" class="btn-group">
-        <a href="#" id="all" class="btn active">Combined</a>
-        <a href="#" id="year" class="btn">Data By State</a>
-      </div>
-      <div id="vis"></div>
-    </div>
+            <div id="main" role="main">
+                <div id="view_selection" class="btn-group">
+                    <a href="#" id="all" class="btn active">Combined</a>
+                    <a href="#" id="year" class="btn">Data By State</a>
+                </div>
+                <div id="vis"></div>
+            </div>
 
-    </div>
         </div>
+    </div>
     <div id="tab-2-tableArea">
-        <div id="demo">
+        <div id="tableArea">
         </div>
     </div>
 </div>
@@ -83,8 +83,10 @@
 <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.2.js"></script>
 <script type="text/javascript" src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
 <script type="text/javascript" src="http://cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="http://cdn.datatables.net/tabletools/2.2.3/js/dataTables.tableTools.min.js"></script>
-<script type="text/javascript" src="http://cdn.datatables.net/responsive/1.0.3/js/dataTables.responsive.min.js"></script>
+<script type="text/javascript"
+        src="http://cdn.datatables.net/tabletools/2.2.3/js/dataTables.tableTools.min.js"></script>
+<script type="text/javascript"
+        src="http://cdn.datatables.net/responsive/1.0.3/js/dataTables.responsive.min.js"></script>
 
 <script type="text/javascript" src="libs/json2.js"></script>
 <script type="text/javascript" src="libs/amplify.min.js"></script>
@@ -92,15 +94,15 @@
 
 <!-- Census App files  -->
 <script type="text/javascript" src="data/stateProperties.js"></script>
-<script type="text/javascript" src="data/donations.js"></script>
 <script type="text/javascript" src="data/usjson.js"></script>
 <script type="text/javascript" src="scripts/CustomTooltip.js"></script>
+<script type="text/javascript" src="scripts/censusAPIManager.js"></script>
+<script type="text/javascript" src="scripts/mapManager.js"></script>
 <script type="text/javascript" src="scripts/plugins.js"></script>
 <script type="text/javascript" src="scripts/config.js"></script>
 <script type="text/javascript" src="scripts/comboBox.js"></script>
 <script type="text/javascript" src="scripts/bubbleChart.js"></script>
 <script type="text/javascript" src="scripts/app.js"></script>
-
 
 
 </body>

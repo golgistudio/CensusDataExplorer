@@ -2,57 +2,21 @@
 
 /* global DataTable: false */
 
-var stateData;
-var donationData;
-var censusData;
-var rawData;
-var tableData;
-var stateNames = [];
-var stateIDs = [];
-var categoryMap;
+var stateData;   // predefined data - name, id, abbreviation
+var censusData;  // JSON formatted data for two states
+var rawData;     // rawData retrieved from the census api
+var tableData;   // Data formatted for a datatable
+var stateNames = [];   // Map of state names that can be retrieved using id
+var stateIDs = [];     // Map of state ids that can be retrieved using name
+var categoryMap;       // Mapping of the census category keys to their values
 
 
-function makeTheMap(state, svg, path) {
-    svg.selectAll(".state")
-        .data(topojson.feature(state, state.objects.states).features)
-        .enter().append("path")
-        .attr("class", "state")
-        .attr("d", path)
-        .on('mouseover', function(d) {
-           retrieveMouseStateData(d);
-        })
-        .on('click', function (d)   {
-            retrieveClickStateData(d);
-        });
-}
-
-function retrieveMouseStateData (statePath) {
-    console.log("mouseover - statePath id = " + statePath.id);
-
-    retrieveStateData(statePath);
-}
-
-function retrieveClickStateData (statePath) {
-    //alert("onclick - statePath id = " + statePath.id);
-    $("#tag1").element.val(statePath.id);
-   //retrieveStateData(statePath);
-}
-function retrieveStateData (statePath) {
-    var stateID = statePath.id;
-    console.log(stateID);
-
-    var abbreviation = "";
-
-   stateData.states.forEach( function(item) {
-        if (stateID === parseInt(item.id)) {
-            abbreviation = item.name;
-            console.log(abbreviation + " id = " + item.id + ", stateID = " + stateID);
-        }
-    });
-    return document.getElementById('name').innerHTML=abbreviation;
-}
-
+/**
+ *
+ */
 function runCompare() {
+
+
     var state1 = $("#tag1").val();
     var state2 = $("#tag2").val();
     var measure = $("#measure").val();
@@ -60,16 +24,21 @@ function runCompare() {
     var categories = [];
 
     categories[0] = stateIDs[state1];
-    categories[1] = stateIDs[state2]
+    categories[1] = stateIDs[state2];
 
-    convertToJSON(rawData,categories );
+    censusData = convertToJSON(rawData,categories );
     $("#vis").empty();
-    initializeBubbleChart(categories);
+    initializeBubbleChart(censusData, categories);
 }
 
-function processRaceData(data) {
+/**
+ *
+ * @param data
+ */
+function populateDataTable(data) {
 
-    $('#demo').html( '<table  class="display" id="example"></table>' );
+
+    $('#tableArea').html( '<table  class="display" id="example"></table>' );
 
     $('#example').dataTable( {
         "data": data,
@@ -90,15 +59,18 @@ function processRaceData(data) {
     } );
     $('#example').dataTable().fnDraw();
 
-
-
-    //var numItems = data.length;
-    //for (var i = 0; i < numItems; i++) {
-    //   censusDataTable.row.add(data[i]).draw();
-    //}
 }
 
+/**
+ *
+ * @param data
+ * @param selectedStates
+ * @returns {Array|*}
+ */
+
 function convertToJSON(data, selectedStates) {
+
+
     var popData = {};
     var censusItems = [];
 
@@ -112,12 +84,16 @@ function convertToJSON(data, selectedStates) {
     var categoryLength = titles.length;
 
     var stateIndex;
+    var totalIndex;
 
     for (var index = 0; index < categoryLength; index++) {
         categories[index] = titles[index];
 
         if (titles[index] === "state") {
             stateIndex = index;
+        }
+        if (titles[index] === "P0030001") {
+            totalIndex = index;
         }
     }
 
@@ -136,12 +112,16 @@ function convertToJSON(data, selectedStates) {
                     var categoryName = categoryMap[categories[j]];
                     var stateNameIndex = dataItem[stateIndex];
 
+                    var total = parseInt(dataItem[totalIndex]);
+                    var populationValue =  parseInt(dataItem[j]);
+
                     var item = {
                         "stateName": stateNames[stateNameIndex],
-                        "population": dataItem[j],
+                        "population": populationValue,
                         "category": categoryName,
                         "stateID" : dataItem[stateIndex],
-                        "id": i * 10 + j
+                        "id": i * 10 + j,
+                        "percent" :  ((populationValue * 100) / total).toFixed(2)
 
                     };
 
@@ -152,10 +132,15 @@ function convertToJSON(data, selectedStates) {
 
     }
 
-    censusData =  popData.censusArray;
+    return popData.censusArray;
 }
 
+/**
+ *
+ * @param data
+ */
 function addStateNames(data) {
+    "use strict";
 
     var dataLength = data.length;
     tableData = [];
@@ -178,88 +163,149 @@ function addStateNames(data) {
 
 }
 
-function getRaceData() {
-    var popRaceURL = "http://api.census.gov/data/2010/sf1?get=P0030001,P0030002,P0030003,P0030004,P0030005&for=state:*&key=dbce6c1ae7a28686113df0bd44f0a687c45892af"
+/**
+ *
+ * @param data
+ */
+function processRaceData(data) {
 
-    $.getJSON( popRaceURL)
-        .done(function( data ) {
-
-            rawData = data;
-            addStateNames(data);
-            processRaceData(tableData);
-            var categories = ["42", "28"];
-            convertToJSON(data, categories);
-
-
-            initializeBubbleChart(categories);
-        });
-
-    categoryMap = [];
-
-
-    categoryMap ["P0030001"] = "Total";
-    categoryMap ["P0030002"] = "White";
-    categoryMap ["P0030003"] = "Black";
-    categoryMap ["P0030004"] = "American Indian/Alaskan";
-    categoryMap ["P0030005"] = "Asian";
+    rawData = data;
+    addStateNames(rawData);
+    populateDataTable(tableData);
+    var categories = ["42", "28"];
+    censusData = convertToJSON(rawData, categories);
 }
 
-function getStateNames() {
+/**
+ *
+ * @param stateNames
+ * @param stateIDs
+ * @returns {string}
+ */
+function createStateComboTags(stateNames, stateIDs) {
+    "use strict";
 
     var availableTags = "<option value=\"none\">Select one...</option>";
-    stateData.states.forEach( function(item) {
+    stateNames.forEach( function(item) {
 
-        availableTags += "<option value\"" +  item.id + "\">" + item.name + "</option>";
+        availableTags += "<option value\"" +  stateIDs[item] + "\">" + item + "</option>";
+
+
+    });
+
+    return availableTags;
+
+}
+
+/**
+ *
+ */
+function getStateNames() {
+    "use strict";
+
+    stateData.states.forEach( function(item) {
 
         stateNames[item.id] = item.name;
         stateIDs[item.name] = item.id;
 
     });
-
-    return availableTags;
 }
 
+/**
+ *
+ * @returns {string}
+ */
 function getAvailableMeasures() {
-    var availableMasures = "<option value=\"none\">Select one...</option>";
+    "use strict";
 
-    availableMasures += "<option value\"race\">race</option>";
-    availableMasures += "<option value\"age\">age</option>";
+    var availableMeasures = "<option value=\"none\">Select one...</option>";
 
+    availableMeasures += "<option value\"race\">race</option>";
+    availableMeasures += "<option value\"age\">age</option>";
 
-    return availableMasures;
+    return availableMeasures;
 }
 
-function initializeBubbleChart(categories) {
+function initializeBubbleChart(bubbleChartData, categories) {
+
     root = typeof exports !== "undefined" && exports !== null ? exports : this;
 
+    var chart, render_vis;
+    chart = null;
 
-        var chart, render_vis;
-        chart = null;
-        render_vis = function(csv, categories) {
-            chart = new BubbleChart(csv, categories);
-            chart.start();
-            return root.display_all();
+    render_vis = function(csv, categories) {
+        chart = new BubbleChart(csv, categories);
+        chart.start();
+        return root.display_all();
+    };
+
+    root.display_all = (function(_this) {
+        return function() {
+            return chart.display_group_all();
         };
-        root.display_all = (function(_this) {
-            return function() {
-                return chart.display_group_all();
-            };
-        })(this);
-        root.display_year = (function(_this) {
-            return function() {
-                return chart.display_by_year(categories);
-            };
-        })(this);
-        root.toggle_view = (function(_this) {
-            return function(view_type) {
-                if (view_type === 'year') {
-                    return root.display_year();
-                } else {
-                    return root.display_all();
-                }
-            };
-        })(this);
-        return render_vis(censusData, categories);
+    })(this);
+
+
+    root.display_year = (function(_this) {
+        return function() {
+            return chart.display_by_year(categories);
+        };
+    })(this);
+
+
+    root.toggle_view = (function(_this) {
+        return function(view_type) {
+            if (view_type === 'year') {
+                return root.display_year();
+            } else {
+                return root.display_all();
+            }
+        };
+    })(this);
+
+    // chart event handler
+    $('#view_selection a').click(function() {
+        var view_type = $(this).attr('id');
+        $('#view_selection a').removeClass('active');
+        $(this).toggleClass('active');
+        toggle_view(view_type);
+        return false;
+    });
+
+    return render_vis(bubbleChartData, categories);
+
+}
+
+/**
+ * Create the map
+ * @param stateJSONData
+ */
+function initializeMap (stateJSONData) {
+
+    var width = 700;
+    var height = 300;
+
+    var svg = d3.select("#map").append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+    makeTheMap(stateJSONData, svg, width, height);
+}
+
+function initializeComboBoxes(stateNames, stateIDs) {
+    var availableTags = createStateComboTags(stateNames, stateIDs);
+
+    $("#tag1").append( availableTags);
+    $("#tag1").combobox();
+
+    $("#tag2").append(availableTags);
+    $("#tag2").combobox();
+
+    // Initialize the measures data - data retrieved from the census API
+    var availableMeasures = getAvailableMeasures();
+
+    $("#measure").append(availableMeasures);
+    $("#measure").combobox();
 
 }
 
@@ -270,69 +316,31 @@ function main() {
 
     "use strict";
 
+    // Create tab UI area
     $( "#tabArea" ).tabs();
 
-    var width = 700,
-        height = 300;
-
-    var projection = d3.geo.albersUsa()
-        .scale(500)
-        .translate([width / 2, height / 2])
-        .precision(.1);
-
-    var path = d3.geo.path()
-        .projection(projection);
-
-    var state = usjsonData;
-
-    var svg = d3.select("#map").append("svg")
-        .attr("width", width)
-        .attr("height", height);
-
-    makeTheMap(state, svg, path);
+    // Initialize the map
+    initializeMap(usjsonData);
 
     stateData = stateProperties;
-    donationData = donations.donationTargets;
 
+    getStateNames();
+    initializeComboBoxes(stateNames, stateIDs);
 
-
-
-   //bubbleChart();
-
-    var availableTags = getStateNames();
-
-    getRaceData();
-
-    $("#tag1").append( availableTags);
-    $("#tag1").combobox();
-
-    $("#tag2").append(availableTags);
-    $("#tag2").combobox();
-
-
-   var availableMeasures = getAvailableMeasures();
-
-    $("#measure").append(availableMeasures);
-    $("#measure").combobox();
-
+    // Event handler for the [Run Compare] button
     $("#compare").click( function() {
-
             runCompare();
-
         }
     );
 
-    $('#view_selection a').click(function() {
-         var view_type = $(this).attr('id');
-         $('#view_selection a').removeClass('active');
-         $(this).toggleClass('active');
-         toggle_view(view_type);
-         return false;
-    });
-
-
+    getRaceData(processRaceData);
+    categoryMap = initializeCategoryMap();
 }
 
+/**
+ * Start the application
+ *
+ */
 $(document).ready(function () {
     "use strict";
     // Main function
