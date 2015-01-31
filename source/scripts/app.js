@@ -2,20 +2,12 @@
 
 /* global DataTable: false */
 
-var stateData;   // predefined data - name, id, abbreviation
-var censusData;  // JSON formatted data for two states
-var rawData;     // rawData retrieved from the census api
-var tableData;   // Data formatted for a datatable
-var stateNames = [];   // Map of state names that can be retrieved using id
-var stateIDs = [];     // Map of state ids that can be retrieved using name
-var categoryMap;       // Mapping of the census category keys to their values
-
 
 /**
  *
  */
 function runCompare() {
-
+    "use strict";
 
     var state1 = $("#tag1").val();
     var state2 = $("#tag2").val();
@@ -23,10 +15,10 @@ function runCompare() {
 
     var categories = [];
 
-    categories[0] = stateIDs[state1];
-    categories[1] = stateIDs[state2];
+    categories[0] = getIDFromName(state1, stateData);
+    categories[1] = getIDFromName(state2, stateData);
 
-    censusData = convertToJSON(rawData,categories );
+    censusData = convertToJSON(rawData,categories, categoryMap, stateData );
     $("#vis").empty();
     initializeBubbleChart(censusData, categories);
 }
@@ -36,11 +28,12 @@ function runCompare() {
  * @param data
  */
 function populateDataTable(data) {
-
+    "use strict";
 
     $('#tableArea').html( '<table  class="display" id="example"></table>' );
+    var exampleSelector = $('#example');
 
-    $('#example').dataTable( {
+    exampleSelector.dataTable( {
         "data": data,
         "columns": [
             { "title": "Total" },
@@ -57,123 +50,21 @@ function populateDataTable(data) {
         },
         responsive: true
     } );
-    $('#example').dataTable().fnDraw();
+    exampleSelector.dataTable().fnDraw();
 
 }
 
-/**
- *
- * @param data
- * @param selectedStates
- * @returns {Array|*}
- */
-
-function convertToJSON(data, selectedStates) {
-
-
-    var popData = {};
-    var censusItems = [];
-
-    popData.censusArray = censusItems;
-
-
-    var categories = [];
-
-    var titles = data[0];
-
-    var categoryLength = titles.length;
-
-    var stateIndex;
-    var totalIndex;
-
-    for (var index = 0; index < categoryLength; index++) {
-        categories[index] = titles[index];
-
-        if (titles[index] === "state") {
-            stateIndex = index;
-        }
-        if (titles[index] === "P0030001") {
-            totalIndex = index;
-        }
-    }
-
-    var dataLength = data.length;
-
-
-    for (var i = 1; i < dataLength; i++) {
-        var dataItem = data[i];
-
-        for (var j = 0; j < categoryLength; j++ ) {
-
-            if ( j !== stateIndex) {
-                var stateName = categories[stateIndex];
-
-                if (dataItem[stateIndex] === selectedStates[0] || dataItem[stateIndex] === selectedStates[1] ) {
-                    var categoryName = categoryMap[categories[j]];
-                    var stateNameIndex = dataItem[stateIndex];
-
-                    var total = parseInt(dataItem[totalIndex]);
-                    var populationValue =  parseInt(dataItem[j]);
-
-                    var item = {
-                        "stateName": stateNames[stateNameIndex],
-                        "population": populationValue,
-                        "category": categoryName,
-                        "stateID" : dataItem[stateIndex],
-                        "id": i * 10 + j,
-                        "percent" :  ((populationValue * 100) / total).toFixed(2)
-
-                    };
-
-                    popData.censusArray.push(item);
-                }
-            }
-        }
-
-    }
-
-    return popData.censusArray;
-}
-
-/**
- *
- * @param data
- */
-function addStateNames(data) {
-    "use strict";
-
-    var dataLength = data.length;
-    tableData = [];
-
-    for (var i = 0; i < dataLength; i++) {
-        var item = data[i];
-        var newItem = [];
-
-        for (var j = 0; j < 6; j++) {
-             newItem[j] = item[j];
-        }
-        var stateName = stateNames[item[5]];
-
-        if (i === 0) {
-            stateName = "Name";
-        }
-        newItem[6] = stateName;
-        tableData[i] = newItem;
-    }
-
-}
 
 /**
  *
  * @param data
  */
 function processRaceData(data) {
+    "use strict";
 
-    rawData = data;
-    addStateNames(rawData);
+    var tableData = addStateNames(data, stateData);
     populateDataTable(tableData);
-    var categories = ["42", "28"];
-    censusData = convertToJSON(rawData, categories);
+    rawData = tableData;
 }
 
 /**
@@ -182,40 +73,23 @@ function processRaceData(data) {
  * @param stateIDs
  * @returns {string}
  */
-function createStateComboTags(stateNames, stateIDs) {
+function createStateComboTags(dataParam) {
     "use strict";
 
     var availableTags = "<option value=\"none\">Select one...</option>";
-    stateNames.forEach( function(item) {
-
-        availableTags += "<option value\"" +  stateIDs[item] + "\">" + item + "</option>";
-
-
-    });
-
+    var length = dataParam.length;
+    for (var i = 0; i < length; i++) {
+        var item = dataParam[i];
+        availableTags += "<option value\"" +  item["id"] + "\">" + item["name"] + "</option>";
+    }
     return availableTags;
-
-}
-
-/**
- *
- */
-function getStateNames() {
-    "use strict";
-
-    stateData.states.forEach( function(item) {
-
-        stateNames[item.id] = item.name;
-        stateIDs[item.name] = item.id;
-
-    });
 }
 
 /**
  *
  * @returns {string}
  */
-function getAvailableMeasures() {
+function createMeasuresComboTags() {
     "use strict";
 
     var availableMeasures = "<option value=\"none\">Select one...</option>";
@@ -281,6 +155,7 @@ function initializeBubbleChart(bubbleChartData, categories) {
  * @param stateJSONData
  */
 function initializeMap (stateJSONData) {
+    "use strict";
 
     var width = 700;
     var height = 300;
@@ -292,20 +167,29 @@ function initializeMap (stateJSONData) {
     makeTheMap(stateJSONData, svg, width, height);
 }
 
-function initializeComboBoxes(stateNames, stateIDs) {
-    var availableTags = createStateComboTags(stateNames, stateIDs);
+/**
+ * https://github.com/ivkremer/jquery-simple-combobox
+ * @param stateData
+ */
+function initializeComboBoxes(stateData) {
+    "use strict";
 
-    $("#tag1").append( availableTags);
-    $("#tag1").combobox();
+    var availableTags = createStateComboTags(stateData);
 
-    $("#tag2").append(availableTags);
-    $("#tag2").combobox();
+    var tag1Selector = $('#tag1');
+    var tag2Selector = $('#tag2');
+    var meausreSelector = $('#measure');
+
+    tag1Selector.append( availableTags);
+
+    tag2Selector.append(availableTags);
+
 
     // Initialize the measures data - data retrieved from the census API
-    var availableMeasures = getAvailableMeasures();
+    var availableMeasures = createMeasuresComboTags();
 
-    $("#measure").append(availableMeasures);
-    $("#measure").combobox();
+    meausreSelector.append(availableMeasures);
+
 
 }
 
@@ -322,10 +206,9 @@ function main() {
     // Initialize the map
     initializeMap(usjsonData);
 
-    stateData = stateProperties;
+    stateData = stateProperties.states;
 
-    getStateNames();
-    initializeComboBoxes(stateNames, stateIDs);
+    initializeComboBoxes(stateData);
 
     // Event handler for the [Run Compare] button
     $("#compare").click( function() {
@@ -334,7 +217,8 @@ function main() {
     );
 
     getRaceData(processRaceData);
-    categoryMap = initializeCategoryMap();
+
+    categoryMap = initializeRaceCategoryMap();
 }
 
 /**

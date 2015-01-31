@@ -3,6 +3,9 @@
 //  http://vallandingham.me/building_a_bubble_cloud.html
 // http://vallandingham.me/gates_bubbles/
 
+/**
+ *
+ */
 var BubbleChart, root,
     __bind = function (fn, me) {
         return function () {
@@ -10,6 +13,12 @@ var BubbleChart, root,
         };
     };
 
+/**
+ *
+ * @param data
+ * @param categories
+ * @constructor
+ */
 BubbleChart = function (data, categories) {
     this.hide_details = __bind(this.hide_details, this);
     this.show_details = __bind(this.show_details, this);
@@ -37,6 +46,28 @@ BubbleChart = function (data, categories) {
     this.classes = [];
     this.classes[cat1] = "state1";
     this.classes[cat2] = "state2";
+
+    this.stateNames  = [];
+    var length = data.length;
+
+    var found1 = false;
+    var found2 = false;
+    for (var i = 0; i < length; i++) {
+        if (data[i].stateID === cat1) {
+            this.stateNames[cat1] = data[i].stateName;
+            found1 = true;
+            if (found2) {
+                break;
+            }
+        }
+        if (data[i].stateID === cat2) {
+            this.stateNames[cat2] = data[i].stateName;
+            found2 = true;
+            if (found1) {
+                break;
+            }
+        }
+    }
 
     this.year_centers = [];
 
@@ -66,6 +97,10 @@ BubbleChart = function (data, categories) {
     this.create_vis();
 }
 
+/**
+ *
+ * @returns {Array}
+ */
 BubbleChart.prototype.create_nodes = function () {
     this.data.forEach((function (_this) {
         return function (d) {
@@ -81,6 +116,7 @@ BubbleChart.prototype.create_nodes = function () {
                 y: Math.random() * 800 ,
                 percent: d.percent
             };
+
             return _this.nodes.push(node);
         };
     })(this));
@@ -89,6 +125,10 @@ BubbleChart.prototype.create_nodes = function () {
     });
 };
 
+/**
+ *
+ * @returns {*}
+ */
 BubbleChart.prototype.create_vis = function () {
     var that;
 
@@ -153,9 +193,6 @@ BubbleChart.prototype.create_vis = function () {
     )
         .attr("class", function (d) {
             return that.classes[d.year];
-        })
-        .attr("fill", function (d) {
-            return getColor(d);
         });
 
 
@@ -164,34 +201,55 @@ BubbleChart.prototype.create_vis = function () {
     });
 };
 
+/**
+ *
+ * @param xVal
+ * @param centerX
+ * @param damper
+ * @param radius
+ * @returns {number}
+ */
 function getX(xVal, centerX, damper, radius) {
-    //console.log("xVal = " + xVal);
-    return   (xVal + (centerX - xVal) * (damper + 0.02)) - (radius);
+
+    var retVal = (xVal + (centerX - xVal) * (damper + 0.02)) - (radius);
+
+    return   retVal;
 }
+
+/**
+ *
+ * @param yVal
+ * @param centerY
+ * @param damper
+ * @returns {*}
+ */
 function getY(yVal, centerY, damper) {
-    //console.log("yVal = " + yVal);
+
     return   yVal + (centerY - yVal) * (damper + 0.02);
 }
 
+/**
+ *
+ * @param d
+ * @returns {string}
+ */
 function getText(d) {
     return d.category + " (" + d.percent + "%)";
 }
 
-
-
-
-function getColor(d) {
-    if (d.name === "Pennsylvania") {
-        return "black";
-    } else {
-        return "orange";
-    }
-}
-
+/**
+ *
+ * @param d
+ * @returns {number}
+ */
 BubbleChart.prototype.charge = function (d) {
     return -Math.pow(d.radius, 2.0) / 8;
 };
 
+/**
+ *
+ * @returns {*}
+ */
 BubbleChart.prototype.start = function () {
     return this.force = d3.layout.force().nodes
     (this.nodes)
@@ -200,6 +258,10 @@ BubbleChart.prototype.start = function () {
 
 };
 
+/**
+ *
+ * @returns {*}
+ */
 BubbleChart.prototype.display_group_all = function () {
     this.force.gravity(this.layout_gravity).charge(this.charge).friction(0.9).on("tick",
         (function (_this) {
@@ -215,6 +277,11 @@ BubbleChart.prototype.display_group_all = function () {
     return this.hide_years();
 };
 
+/**
+ *
+ * @param d
+ * @param _this
+ */
 function updateTextPosition(d, _this) {
 
     var id = "#T" + d.id;
@@ -223,18 +290,26 @@ function updateTextPosition(d, _this) {
     $(id).attr("y", d.y) ;
 }
 
+/**
+ *
+ * @param alpha
+ */
 BubbleChart.prototype.move_towards_center = function (alpha) {
     return (function (_this) {
         return function (d) {
             d.x = d.x + (_this.center.x - d.x) * (_this.damper + 0.02) * alpha;
-            //console.log("Move towards center alpha = " + alpha);
-            //console.log("Move towards center (x,y) = " + d.x + ", " + d.y) ;
+
             d.y = d.y + (_this.center.y - d.y) * (_this.damper + 0.02) * alpha;
             updateTextPosition(d, _this);
         };
     })(this);
 };
 
+/**
+ *
+ * @param categories
+ * @returns {*}
+ */
 BubbleChart.prototype.display_by_year = function (categories) {
     this.force.gravity(this.layout_gravity).charge(this.charge).friction(0.9).on("tick", (function (_this) {
         return function (e) {
@@ -249,6 +324,10 @@ BubbleChart.prototype.display_by_year = function (categories) {
     return this.display_years(categories);
 };
 
+/**
+ *
+ * @param alpha
+ */
 BubbleChart.prototype.move_towards_year = function (alpha) {
     return (function (_this) {
         return function (d) {
@@ -262,6 +341,11 @@ BubbleChart.prototype.move_towards_year = function (alpha) {
     })(this);
 };
 
+/**
+ *
+ * @param categories
+ * @returns {*|XMLList}
+ */
 BubbleChart.prototype.display_years = function (categories) {
     var years, years_data;
     var years_x = [];
@@ -269,8 +353,8 @@ BubbleChart.prototype.display_years = function (categories) {
     var cat1 = categories[0];
     var cat2 = categories[1];
     var names = [];
-    names[0] = stateNames[cat1];
-    names[1] = stateNames[cat2];
+    names[0] = this.stateNames[cat1];
+    names[1] = this.stateNames[cat2];
     years_x[names[0]] = 160;
     years_x[names[1]] = this.width - 160;
     years_data = d3.keys(years_x);
@@ -287,11 +371,22 @@ BubbleChart.prototype.display_years = function (categories) {
     });
 };
 
+/**
+ *
+ * @returns {*}
+ */
 BubbleChart.prototype.hide_years = function () {
     var years;
     return years = this.vis.selectAll(".years").remove();
 };
 
+/**
+ *
+ * @param data
+ * @param i
+ * @param element
+ * @returns {*}
+ */
 BubbleChart.prototype.show_details = function (data, i, element) {
     var content;
     d3.select(element).attr("stroke", "grey");
@@ -303,6 +398,13 @@ BubbleChart.prototype.show_details = function (data, i, element) {
     return this.tooltip.showTooltip(content, d3.event);
 };
 
+/**
+ *
+ * @param data
+ * @param i
+ * @param element
+ * @returns {*}
+ */
 BubbleChart.prototype.hide_details = function (data, i, element) {
     d3.select(element).attr("stroke", (function (_this) {
         return function (d) {

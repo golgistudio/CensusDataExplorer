@@ -3,7 +3,7 @@
  */
 
 
-function initializeCategoryMap() {
+function initializeRaceCategoryMap() {
     var categories = [];
     categories ["P0030001"] = "Total";
     categories ["P0030002"] = "White";

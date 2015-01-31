@@ -44,7 +44,14 @@ function makeTheMap(state, svg, width, height) {
 function retrieveMouseStateData (statePath) {
     "use strict";
 
-    retrieveStateData(statePath);
+    var name = retrieveStateName(statePath);
+    setStateName(name);
+}
+
+function setStateName(stateName) {
+    "use strict";
+
+    document.getElementById('name').innerHTML=stateName;
 }
 
 /**
@@ -54,7 +61,8 @@ function retrieveMouseStateData (statePath) {
 function retrieveClickStateData (statePath) {
     "use strict";
 
-    $("#tag1").element.val(statePath.id);
+    var name = retrieveStateName(statePath);
+
 }
 
 /**
@@ -62,16 +70,21 @@ function retrieveClickStateData (statePath) {
  * @param statePath
  * @returns {string}
  */
-function retrieveStateData (statePath) {
+function retrieveStateName (statePath) {
+    "use strict";
 
     var stateID = statePath.id;
 
-    var abbreviation = "";
+    var stateName = "";
 
-    stateData.states.forEach( function(item) {
+    var length = stateData.length;
+
+    for (var i = 0; i < length; i++) {
+
+        var item = stateData[i];
         if (stateID === parseInt(item.id)) {
-            abbreviation = item.name;
+            stateName = item.name;
         }
-    });
-    return document.getElementById('name').innerHTML=abbreviation;
+    }
+    return  stateName;
 }
