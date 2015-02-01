@@ -1,11 +1,9 @@
-/**
- * Created by laurie on 1/30/2015.
- */
+/** @module data */
 
 var stateData;   // predefined data - name, id, abbreviation
-var censusData;  // JSON formatted data for two states
-var rawData;     // rawData retrieved from the census api
-var categoryMap;       // Mapping of the census category keys to their values
+var rawData;     // rawData retrieved from the census api with state names added
+var categoryMap; // Mapping of the census category keys to their values
+var indices;     // Indices for the name, total and state id
 
 
 /**
@@ -23,27 +21,14 @@ function convertToJSON(data, selectedStates, categoryMap, stateData) {
     var totalIndex;
     var nameIndex;
     var popData = {};
-    var categories = [];
+
+    var categories = data[0];
 
     popData.censusArray = [];
 
     var titles = data[0];
 
     var categoryLength = titles.length;
-
-    for (var index = 0; index < categoryLength; index++) {
-        categories[index] = titles[index];
-
-        if (titles[index] === "state") {
-            stateIndex = index;
-        }
-        if (titles[index] === "P0030001") {
-            totalIndex = index;
-        }
-        if (titles[index] === "name") {
-            nameIndex = index;
-        }
-    }
 
     var dataLength = data.length;
 
@@ -52,13 +37,13 @@ function convertToJSON(data, selectedStates, categoryMap, stateData) {
 
         for (var j = 0; j < categoryLength; j++ ) {
 
-            if ( j !== stateIndex && j !== nameIndex) {
+            if ( j !== indices.stateIndex && j !== indices.nameIndex) {
 
-                if (dataItem[stateIndex] === selectedStates[0] || dataItem[stateIndex] === selectedStates[1] ) {
+                if (dataItem[indices.stateIndex] === selectedStates[0] || dataItem[indices.stateIndex] === selectedStates[1] ) {
                     var categoryName = categoryMap[categories[j]];
-                    var stateNameIndex = dataItem[stateIndex];
+                    var stateNameIndex = dataItem[indices.stateIndex];
 
-                    var total = parseInt(dataItem[totalIndex]);
+                    var total = parseInt(dataItem[indices.totalIndex]);
                     var populationValue =  parseInt(dataItem[j]);
 
                     var stateNameValue = getNameFromID(stateNameIndex, stateData);
@@ -66,7 +51,7 @@ function convertToJSON(data, selectedStates, categoryMap, stateData) {
                         "stateName": stateNameValue,
                         "population": populationValue,
                         "category": categoryName,
-                        "stateID" : dataItem[stateIndex],
+                        "stateID" : dataItem[indices.stateIndex],
                         "id": i * 10 + j,
                         "percent" :  ((populationValue * 100) / total).toFixed(2)
 
@@ -102,14 +87,34 @@ function addStateNames(data, stateNameData) {
             newItem[j] = item[j];
         }
         var stateName = getNameFromID(item[5], stateNameData);
+        var otherPop =  calculateOther(item);
 
         if (i === 0) {
             stateName = "name";
+            otherPop = "other";
         }
         newItem[6] = stateName;
+        newItem[7] = otherPop;
         tableData[i] = newItem;
     }
     return tableData;
+}
+
+/**
+ *
+ * @param item
+ * @returns {number}
+ */
+function calculateOther(item) {
+    var amount = parseInt( item[1]) + parseInt( item[2]) + parseInt(item[3]) + parseInt(item[4]);
+
+    var returnVal = item[0] - parseInt(amount);
+
+    if (returnVal < 0) {
+        returnVal = 0;
+    }
+
+    return returnVal;
 }
 
 /**
@@ -125,8 +130,8 @@ function getNameFromID(id, stateNameData) {
 
     for (var i = 0; i < length; i++) {
         var item = stateNameData[i];
-        if (item["id"] === id) {
-            return item["name"];
+        if (item.id === id) {
+            return item.name;
         }
     }
 
@@ -145,8 +150,29 @@ function getIDFromName(name, stateNameData) {
 
     for (var i = 0; i < length; i++) {
         var item = stateNameData[i];
-        if (item["name"] === name) {
-            return item["id"];
+        if (item.name === name) {
+            return item.id;
+        }
+    }
+
+}
+
+/**
+ *
+ * @param name
+ * @param stateNameData
+ * @returns {*}
+ */
+function getAbbreviationFromID(id, stateListData) {
+    "use strict";
+
+    var length = stateListData.length;
+
+    for (var i = 0; i < length; i++) {
+        var item = stateListData[i];
+        var idAsInt = parseInt(item.id);
+        if (idAsInt === id) {
+            return item.abbreviation;
         }
     }
 

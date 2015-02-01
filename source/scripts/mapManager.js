@@ -14,7 +14,7 @@ function makeTheMap(state, svg, width, height) {
     "use strict";
 
     var scale = 500;
-    var precision = .1;
+    var precision = 0.1;
 
     var projection = d3.geo.albersUsa()
         .scale(scale)
@@ -29,11 +29,17 @@ function makeTheMap(state, svg, width, height) {
         .enter().append("path")
         .attr("class", "state")
         .attr("d", path)
-        .on('mouseover', function(d) {
-            retrieveMouseStateData(d);
+        .attr("id", function (data) {
+             return "stateID" + data.id;
         })
-        .on('click', function (d)   {
-            retrieveClickStateData(d);
+        .text(function(data) {
+           return retrieveAbbreviation(data.id, stateData);
+        })
+        .on('mouseover', function(data) {
+            retrieveMouseStateData(data);
+        })
+        .on('click', function (data)   {
+            retrieveClickStateData(data);
         });
 }
 
@@ -54,6 +60,15 @@ function setStateName(stateName) {
     document.getElementById('name').innerHTML=stateName;
 }
 
+function retrieveAbbreviation(id, stateListData) {
+    var abbreviation = getAbbreviationFromID(id, stateListData);
+
+    var returnVal =  abbreviation;
+    return returnVal;
+}
+
+var toggle = 0;
+
 /**
  *
  * @param statePath
@@ -62,6 +77,38 @@ function retrieveClickStateData (statePath) {
     "use strict";
 
     var name = retrieveStateName(statePath);
+
+    var selector = $('#stateID' + statePath.id) ;
+
+    if (toggle < 1) {
+        $("#tag1").val(name);
+        $(".mapState1").attr("class", "state");
+        selector.attr("class", "state mapState1");
+        toggle = 1;
+    }  else {
+        $("#tag2").val(name);
+        toggle = 0;
+        $(".mapState2").attr("class", "state");
+        selector.attr("class", "mapState2");
+    }
+
+}
+
+function updateMap(name, toggleID) {
+    toggle = toggleID;
+
+    var id = getIDFromName(name, stateData);
+    var selector = $('#stateID' + parseInt(id)) ;
+
+    if (toggle < 1) {
+        $(".mapState1").attr("class", "state");
+        selector.attr("class", "state mapState1");
+        toggle = 1;
+    }  else {
+        $(".mapState2").attr("class", "state");
+        selector.attr("class", "mapState2");
+        toggle = 0;
+    }
 
 }
 

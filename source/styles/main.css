@@ -199,13 +199,25 @@ footer {
 #name {
 
     font-family:arial;
-    font-size:3em;
+    font-size:20pt;
 }
 .state {
     fill:#c0c0c0;
     stroke:white;
     stroke-width:1px;
+    text-color: #fa160f;
+    font-size: 20pt;
+    font-weight: bold;
+    text-align: center;
 }
 .state:hover {
     fill:#333;
+}
+
+.mapState1 {
+       fill: #ffb261 !important;
+}
+
+.mapState2 {
+    fill: #89c8cb !important;
 }

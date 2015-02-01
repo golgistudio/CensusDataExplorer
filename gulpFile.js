@@ -30,8 +30,8 @@ gulp.task("checkQuality", ["cleanQuality"], function(callback) {
 
 	runSequence(
 				'docs',
-				'testWithIstanbul',
-				'runTests',
+				//'testWithIstanbul',
+			//	'runTests',
               	'w3cjs',
 				'lint',
 				'complexity', // ToDo - why does this need to be at the end (an error is thrown)

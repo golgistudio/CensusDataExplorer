@@ -16,7 +16,6 @@
     <link rel="stylesheet" href="http://cdn.datatables.net/1.10.4/css/jquery.dataTables.css"/>
     <link rel="stylesheet" href="http://cdn.datatables.net/tabletools/2.2.3/css/dataTables.tableTools.css"/>
     <link rel="stylesheet" href="http://cdn.datatables.net/responsive/1.0.3/css/dataTables.responsive.css"/>
-    <link rel="stylesheet" href="styles/combobox.css">
     <!-- Census Explorer files  -->
     <link rel="stylesheet" href="styles/main.css">
 
@@ -31,16 +30,16 @@
     <div id="selectedStates">
         <div class="combo">
             <label for="tag1">State   1: </label>
-            <select id="tag1" class="easyui-combobox"> </select>
+            <select id="tag1" > </select>
         </div >
         <div class="combo">
             <label for="tag2">State   2: </label>
-            <select id="tag2" class="easyui-combobox"> </select>
+            <select id="tag2" > </select>
         </div>
 
         <div class="combo">
             <label for="measure">Measure: </label>
-            <select id="measure" class="easyui-combobox"> </select>
+            <select id="measure"> </select>
         </div>
 
         <button id="compare">Run Compare</button>
@@ -88,8 +87,6 @@
 <script type="text/javascript"
         src="http://cdn.datatables.net/responsive/1.0.3/js/dataTables.responsive.min.js"></script>
 
-<script type="text/javascript" src="libs/jquery.combobox.js"></script>
-
 <script type="text/javascript" src="libs/json2.js"></script>
 
 <!-- Census App files  -->
@@ -97,9 +94,8 @@
 <script type="text/javascript" src="data/usjson.js"></script>
 <script type="text/javascript" src="scripts/CustomTooltip.js"></script>
 <script type="text/javascript" src="scripts/censusAPIManager.js"></script>
-<script type="text/javascript" src="scripts/mapManager.js"></script>
 <script type="text/javascript" src="scripts/dataUtilities.js"></script>
-<script type="text/javascript" src="scripts/plugins.js"></script>
+<script type="text/javascript" src="scripts/mapManager.js"></script>
 <script type="text/javascript" src="scripts/config.js"></script>
 <script type="text/javascript" src="scripts/bubbleChart.js"></script>
 <script type="text/javascript" src="scripts/app.js"></script>

@@ -1,19 +1,61 @@
+/** @module API */
+
 /**
- * Created by laurie on 1/29/2015.
+ *
+ * @returns {Array}
  */
-
-
 function initializeRaceCategoryMap() {
+    "use strict";
+
     var categories = [];
-    categories ["P0030001"] = "Total";
-    categories ["P0030002"] = "White";
-    categories ["P0030003"] = "Black";
-    categories ["P0030004"] = "American Indian/Alaskan";
-    categories ["P0030005"] = "Asian";
+    categories.P0030001 = "Total";
+    categories.P0030002 = "White";
+    categories.P0030003 = "Black";
+    categories.P0030004 = "American Indian/Alaskan";
+    categories.P0030005 = "Asian";
+    categories.other = "Other";
 
     return categories;
 }
 
+/**
+ *
+ * @param data
+ * @returns {{stateIndex: *, totalIndex: *, nameIndex: *}}
+ */
+function getIndices(data) {
+
+    var stateIndex;
+    var totalIndex;
+    var nameIndex;
+
+    var titles = data[0];
+
+    var categoryLength = titles.length;
+
+    for (var index = 0; index < categoryLength; index++) {
+
+        if (titles[index] === "state") {
+            stateIndex = index;
+        }
+        if (titles[index] === "P0030001") {
+            totalIndex = index;
+        }
+        if (titles[index] === "name") {
+            nameIndex = index;
+        }
+    }
+    return {
+        "stateIndex": stateIndex,
+        "totalIndex": totalIndex,
+        "nameIndex": nameIndex
+    }
+}
+
+/**
+ *
+ * @param raceDataCallback
+ */
 function getRaceData(raceDataCallback) {
     "use strict";
 
@@ -21,6 +63,7 @@ function getRaceData(raceDataCallback) {
 
     $.getJSON( popRaceURL)
         .done(function(data) {
+            "use strict";
             raceDataCallback(data);
         });
 

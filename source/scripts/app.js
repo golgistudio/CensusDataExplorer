@@ -18,7 +18,15 @@ function runCompare() {
     categories[0] = getIDFromName(state1, stateData);
     categories[1] = getIDFromName(state2, stateData);
 
-    censusData = convertToJSON(rawData,categories, categoryMap, stateData );
+    var stateID_1 = parseInt(categories[0]);
+    var stateID_2 = parseInt(categories[1]);
+
+    $("#" + stateID_1).toggleClass("mapState1");
+    $("#" + stateID_2).toggleClass("mapState2");
+
+    var keys = d3.select("#map svg").selectAll(".state");
+
+    var censusData = convertToJSON(rawData,categories, categoryMap, stateData );
     $("#vis").empty();
     initializeBubbleChart(censusData, categories);
 }
@@ -42,7 +50,8 @@ function populateDataTable(data) {
             { "title": "American Indian/Alaskan", "class": "center" },
             { "title": "Asian", "class": "center" },
             { "title": "State", "class": "center" },
-            { "title": "Name", "class": "center"}
+            { "title": "Name", "class": "center"},
+            { "title": "Other", "class" : "center"}
         ],
         dom: 'T<"clear">lfrtip',
         tableTools: {
@@ -65,6 +74,7 @@ function processRaceData(data) {
     var tableData = addStateNames(data, stateData);
     populateDataTable(tableData);
     rawData = tableData;
+    indices = getIndices(tableData);
 }
 
 /**
@@ -80,8 +90,9 @@ function createStateComboTags(dataParam) {
     var length = dataParam.length;
     for (var i = 0; i < length; i++) {
         var item = dataParam[i];
-        availableTags += "<option value\"" +  item["id"] + "\">" + item["name"] + "</option>";
+        availableTags += "<option value\"" +  item.id + "\">" + item.name + "</option>";
     }
+
     return availableTags;
 }
 
@@ -94,14 +105,15 @@ function createMeasuresComboTags() {
 
     var availableMeasures = "<option value=\"none\">Select one...</option>";
 
-    availableMeasures += "<option value\"race\">race</option>";
-    availableMeasures += "<option value\"age\">age</option>";
+    availableMeasures += "<option value\"Race\">Race</option>";
+    availableMeasures += "<option value\"Age\">Age</option>";
+
 
     return availableMeasures;
 }
 
 function initializeBubbleChart(bubbleChartData, categories) {
-
+   // "use strict";
     root = typeof exports !== "undefined" && exports !== null ? exports : this;
 
     var chart, render_vis;
@@ -168,7 +180,7 @@ function initializeMap (stateJSONData) {
 }
 
 /**
- * https://github.com/ivkremer/jquery-simple-combobox
+ * http://www.jeasyui.com/documentation/combobox.php
  * @param stateData
  */
 function initializeComboBoxes(stateData) {
@@ -178,19 +190,30 @@ function initializeComboBoxes(stateData) {
 
     var tag1Selector = $('#tag1');
     var tag2Selector = $('#tag2');
-    var meausreSelector = $('#measure');
+    var measureSelector = $('#measure');
 
     tag1Selector.append( availableTags);
 
     tag2Selector.append(availableTags);
 
-
     // Initialize the measures data - data retrieved from the census API
     var availableMeasures = createMeasuresComboTags();
 
-    meausreSelector.append(availableMeasures);
+    measureSelector.append(availableMeasures);
 
+    measureSelector.val("Race");
 
+    tag1Selector.change(function() {
+         updateMap($("#tag1 option:selected").val(), 0);
+    });
+
+    tag2Selector.change(function() {
+        updateMap($("#tag2 option:selected").val(), 1);
+    });
+}
+
+function selectState(item, id) {
+    console.log (item);
 }
 
 /**
@@ -203,10 +226,10 @@ function main() {
     // Create tab UI area
     $( "#tabArea" ).tabs();
 
+    stateData = stateProperties.states;
+
     // Initialize the map
     initializeMap(usjsonData);
-
-    stateData = stateProperties.states;
 
     initializeComboBoxes(stateData);
 

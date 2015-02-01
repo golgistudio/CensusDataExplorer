@@ -8,6 +8,7 @@
  */
 var BubbleChart, root,
     __bind = function (fn, me) {
+        "use strict";
         return function () {
             return fn.apply(me, arguments);
         };
@@ -20,6 +21,8 @@ var BubbleChart, root,
  * @constructor
  */
 BubbleChart = function (data, categories) {
+    "use strict";
+
     this.hide_details = __bind(this.hide_details, this);
     this.show_details = __bind(this.show_details, this);
     this.hide_years = __bind(this.hide_years, this);
@@ -35,7 +38,7 @@ BubbleChart = function (data, categories) {
     this.data = data;
     this.width = 940;
     this.height = 600;
-    this.tooltip = CustomTooltip("gates_tooltip", 240);
+    this.tooltip = new CustomTooltip("gates_tooltip", 240);
     this.center = {
         x: this.width / 2,
         y: this.height / 2
@@ -72,15 +75,15 @@ BubbleChart = function (data, categories) {
     this.year_centers = [];
 
     this.year_centers[cat1] = [];
-    this.year_centers[cat1]["x"] = this.width / 3;
-    this.year_centers[cat1]["y"] = this.height / 2;
+    this.year_centers[cat1].x = this.width / 3;
+    this.year_centers[cat1].y = this.height / 2;
 
     this.year_centers[cat2] = [];
-    this.year_centers[cat2]["x"] = 2 * this.width / 3;
-    this.year_centers[cat2]["y"] = this.height / 2;
+    this.year_centers[cat2].x = 2 * this.width / 3;
+    this.year_centers[cat2].y = this.height / 2;
 
 
-    this.layout_gravity = -0.01;
+    this.layout_gravity = -0.001;
     this.damper = 0.1;
     this.vis = null;
     this.nodes = [];
@@ -95,13 +98,15 @@ BubbleChart = function (data, categories) {
     this.radius_scale = d3.scale.pow().exponent(0.5).domain([0, max_amount]).range([2, 85]);
     this.create_nodes();
     this.create_vis();
-}
+} ;
 
 /**
  *
  * @returns {Array}
  */
 BubbleChart.prototype.create_nodes = function () {
+    "use strict";
+
     this.data.forEach((function (_this) {
         return function (d) {
             var node;
@@ -130,6 +135,8 @@ BubbleChart.prototype.create_nodes = function () {
  * @returns {*}
  */
 BubbleChart.prototype.create_vis = function () {
+    "use strict";
+
     var that;
 
     this.vis = d3.select("#vis").append("svg").attr("width", this.width).attr("height", this.height).attr("id", "svg_vis");
@@ -210,6 +217,7 @@ BubbleChart.prototype.create_vis = function () {
  * @returns {number}
  */
 function getX(xVal, centerX, damper, radius) {
+    "use strict";
 
     var retVal = (xVal + (centerX - xVal) * (damper + 0.02)) - (radius);
 
@@ -224,6 +232,7 @@ function getX(xVal, centerX, damper, radius) {
  * @returns {*}
  */
 function getY(yVal, centerY, damper) {
+    "use strict";
 
     return   yVal + (centerY - yVal) * (damper + 0.02);
 }
@@ -234,6 +243,7 @@ function getY(yVal, centerY, damper) {
  * @returns {string}
  */
 function getText(d) {
+    "use strict";
     return d.category + " (" + d.percent + "%)";
 }
 
@@ -243,7 +253,8 @@ function getText(d) {
  * @returns {number}
  */
 BubbleChart.prototype.charge = function (d) {
-    return -Math.pow(d.radius, 2.0) / 8;
+    "use strict";
+    return -Math.pow(d.radius, 2.0) / 4;
 };
 
 /**
@@ -251,11 +262,9 @@ BubbleChart.prototype.charge = function (d) {
  * @returns {*}
  */
 BubbleChart.prototype.start = function () {
-    return this.force = d3.layout.force().nodes
-    (this.nodes)
+    "use strict";
 
-        .size([this.width, this.height]);
-
+    this.force = d3.layout.force().nodes(this.nodes).size([this.width, this.height]);
 };
 
 /**
@@ -263,6 +272,7 @@ BubbleChart.prototype.start = function () {
  * @returns {*}
  */
 BubbleChart.prototype.display_group_all = function () {
+    "use strict";
     this.force.gravity(this.layout_gravity).charge(this.charge).friction(0.9).on("tick",
         (function (_this) {
             return function (e) {
@@ -283,6 +293,7 @@ BubbleChart.prototype.display_group_all = function () {
  * @param _this
  */
 function updateTextPosition(d, _this) {
+    "use strict";
 
     var id = "#T" + d.id;
 
@@ -295,6 +306,7 @@ function updateTextPosition(d, _this) {
  * @param alpha
  */
 BubbleChart.prototype.move_towards_center = function (alpha) {
+    "use strict";
     return (function (_this) {
         return function (d) {
             d.x = d.x + (_this.center.x - d.x) * (_this.damper + 0.02) * alpha;
@@ -311,7 +323,8 @@ BubbleChart.prototype.move_towards_center = function (alpha) {
  * @returns {*}
  */
 BubbleChart.prototype.display_by_year = function (categories) {
-    this.force.gravity(this.layout_gravity).charge(this.charge).friction(0.9).on("tick", (function (_this) {
+    "use strict";
+    this.force.gravity(this.layout_gravity).charge(this.charge).friction(.9).on("tick", (function (_this) {
         return function (e) {
             return _this.circles.each(_this.move_towards_year(e.alpha)).attr("cx", function (d) {
                 return d.x;
@@ -329,6 +342,7 @@ BubbleChart.prototype.display_by_year = function (categories) {
  * @param alpha
  */
 BubbleChart.prototype.move_towards_year = function (alpha) {
+    "use strict";
     return (function (_this) {
         return function (d) {
             var target;
@@ -347,6 +361,7 @@ BubbleChart.prototype.move_towards_year = function (alpha) {
  * @returns {*|XMLList}
  */
 BubbleChart.prototype.display_years = function (categories) {
+    "use strict";
     var years, years_data;
     var years_x = [];
 
@@ -376,8 +391,9 @@ BubbleChart.prototype.display_years = function (categories) {
  * @returns {*}
  */
 BubbleChart.prototype.hide_years = function () {
+    "use strict";
     var years;
-    return years = this.vis.selectAll(".years").remove();
+    return  years = this.vis.selectAll(".years").remove();
 };
 
 /**
@@ -388,6 +404,7 @@ BubbleChart.prototype.hide_years = function () {
  * @returns {*}
  */
 BubbleChart.prototype.show_details = function (data, i, element) {
+    "use strict";
     var content;
     d3.select(element).attr("stroke", "grey");
     content = "<span class=\"name\">Category:</span><span class=\"value\"> " + data.category + "</span><br/>";
@@ -406,6 +423,7 @@ BubbleChart.prototype.show_details = function (data, i, element) {
  * @returns {*}
  */
 BubbleChart.prototype.hide_details = function (data, i, element) {
+    "use strict";
     d3.select(element).attr("stroke", (function (_this) {
         return function (d) {
             return d3.rgb(_this.fill_color(d.category)).darker();
